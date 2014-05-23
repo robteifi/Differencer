@@ -1,5 +1,19 @@
 {
     "name": "robteifi/differencer",
+    "description": "Side-by-side comparison with highlighted differences",
+    "type": "library",
+    "license": "MIT",
+    "homepage": "https://github.com/robteifi/Differencer",
+    "authors": [
+        {
+            "name": "Rob Heyes",
+            "email": "rob@scl.co.uk",
+            "homepage": "http://github.com/robteifi"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.3"
+    },
     "require-dev": {
         "phpspec/phpspec": "2.*@dev",
         "squizlabs/php_codesniffer": "1.*"
