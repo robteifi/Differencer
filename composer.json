@@ -1,0 +1,12 @@
+{
+    "name": "robteifi/differencer",
+    "require-dev": {
+        "phpspec/phpspec": "2.*@dev",
+        "squizlabs/php_codesniffer": "1.*"
+    },
+    "autoload": {
+        "psr-0": {
+            "RobTeifi\\Differencer": "./src/"
+        }
+    }
+}
