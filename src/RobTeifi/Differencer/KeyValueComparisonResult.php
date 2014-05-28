@@ -37,4 +37,9 @@ class KeyValueComparisonResult extends ComparisonResult
     {
         return $this->key;
     }
+
+    public function mapString()
+    {
+        return ' => ';
+    }
 }

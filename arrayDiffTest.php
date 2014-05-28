@@ -83,3 +83,5 @@ new FormattingDifferencer('Arrays that don\'t match (missing array)', $arr3, $ar
 new FormattingDifferencer('Arrays that should match with nulls', ['a' => null], ['a' => null], true);
 
 new FormattingDifferencer('Empty arrays that should match', [], [], true);
+
+include "./classComparisons.php";

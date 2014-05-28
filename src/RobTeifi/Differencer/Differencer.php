@@ -12,14 +12,14 @@ class Differencer
     private $matched;
 
     /**
-     * @param  mixed $argument1
-     * @param  mixed $argument2
+     * @param  mixed $expected
+     * @param  mixed $actual
      * @return bool
      */
-    public function compare($argument1, $argument2)
+    public function compare($expected, $actual)
     {
         $this->result = new CompoundResult(0);
-        $result = $this->internalCompare(0, $argument1, $argument2);
+        $result = $this->internalCompare(0, $expected, $actual);
         $this->addResult($result);
         if (!$result->getMatched()) {
             $this->matched = false;
@@ -29,9 +29,9 @@ class Differencer
     }
 
     /**
-     * @param  int              $depth
-     * @param  mixed            $argument1
-     * @param  mixed            $argument2
+     * @param  int $depth
+     * @param  mixed $argument1
+     * @param  mixed $argument2
      * @return ComparisonResult
      */
     private function internalCompare($depth, $argument1, $argument2)
@@ -49,10 +49,10 @@ class Differencer
             if (is_object($argument1) && is_object($argument2)) {
                 if (get_class($argument1) === get_class($argument2)) {
                     // same class
-                    return $this->objectCompare($depth, (object) $argument1, (object) $argument2);
+                    return $this->objectCompare($depth, (object)$argument1, (object)$argument2);
                 }
 
-                return new MismatchedClassResult($depth, (object) $argument1, (object) $argument2);
+                return new MismatchedClassResult($depth, (object)$argument1, (object)$argument2);
             }
             // either both scalars or mismatch in types
             if (is_numeric($argument1) && is_numeric($argument2)) {
@@ -61,7 +61,7 @@ class Differencer
                     $depth,
                     $argument1,
                     $argument2,
-                    $this->findMismatchPosition((string) $argument1, (string) $argument2)
+                    $this->findMismatchPosition((string)$argument1, (string)$argument2)
                 );
             }
             if (is_bool($argument1) && is_bool($argument2)) {
@@ -79,9 +79,9 @@ class Differencer
     }
 
     /**
-     * @param  int              $depth
-     * @param  string           $argument1
-     * @param  string           $argument2
+     * @param  int $depth
+     * @param  string $argument1
+     * @param  string $argument2
      * @return ComparisonResult
      */
     private function stringCompare($depth, $argument1, $argument2)
@@ -99,7 +99,7 @@ class Differencer
     }
 
     /**
-     * @param  int   $depth
+     * @param  int $depth
      * @param  array $argument1
      * @param  array $argument2
      * @return array
@@ -150,15 +150,80 @@ class Differencer
         return $result;
     }
 
+    private function objectKeys($object)
+    {
+        $keys = [];
+        foreach ($object as $key => $val) {
+            $keys[] = $key;
+        }
+        sort($keys);
+        return $keys;
+    }
+
     /**
-     * @param  int    $depth
+     * @param  int $depth
      * @param  object $argument1
      * @param  object $argument2
      * @return array
      */
-    private function objectCompare($depth, $argument1, $argument2)
+    private function objectCompare($depth, $obj1, $obj2)
     {
-        return [false, 'ObjectCompare not implemented yet', ''];
+        $result = new ObjectComparisonResult($depth, $obj1);
+
+        $refl1 = new \ReflectionClass($obj1);
+        $refl2 = new \ReflectionClass($obj2);
+
+        $props1 = $refl1->getProperties();
+
+//        $keys1 = $this->objectKeys($obj1);
+//        $keys2 = $this->objectKeys($obj2);
+//        $keyDiffs = array_merge(array_diff($keys1, $keys2), array_diff($keys2, $keys1));
+
+//        if (count($keyDiffs) > 0) {
+//            // key mismatch
+//            $allKeys = $this->getAllKeys($keys1, $keys2);
+//            foreach ($allKeys as $key) {
+//
+//                $keyIn1 = in_array($key, $keys1);
+//                $keyIn2 = in_array($key, $keys2);
+//
+//                if ($keyIn1 && !$keyIn2) {
+//                    $result->addResult(
+//                        new KeyValueComparisonResult(
+//                            $depth + 1,
+//                            $key,
+//                            new RightValueMissingResult($depth + 1, $obj1->$key, $key)
+//                        )
+//                    );
+//                } elseif (!$keyIn1 && $keyIn2) {
+//                    $result->addResult(
+//                        new KeyValueComparisonResult(
+//                            $depth + 1,
+//                            $key,
+//                            new LeftValueMissingResult($depth + 1, $obj2->$key, $key)
+//                        )
+//                    );
+//                } else {
+//                    // must be in both
+//                    $this->compareValues($result, $key, $depth, $obj1->$key, $obj2->$key);
+//                }
+//            }
+//        } else {
+        foreach ($props1 as $prop) {
+            $prop->setAccessible(true);
+            $key = $prop->getName();
+            $value = $prop->getValue($obj1);
+            $other = $refl2->getProperty($key);
+            $other->setAccessible(true);
+            $comparison = new PropertyValueComparisonResult(
+                $depth+1,
+                $key,
+                $this->internalCompare($depth + 1, $value, $other->getValue($obj2))
+            );
+            $result->addResult($comparison);
+        }
+//        }
+        return $result;
     }
 
     /**

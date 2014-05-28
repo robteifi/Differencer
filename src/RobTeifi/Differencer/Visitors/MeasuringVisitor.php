@@ -8,6 +8,7 @@ use RobTeifi\Differencer\CompoundResult;
 use RobTeifi\Differencer\KeyValueComparisonResult;
 use RobTeifi\Differencer\LeftValueMissingResult;
 use RobTeifi\Differencer\MismatchedTypesResult;
+use RobTeifi\Differencer\PropertyValueComparisonResult;
 use RobTeifi\Differencer\RightValueMissingResult;
 use RobTeifi\Differencer\ScalarComparisonResult;
 use RobTeifi\Differencer\StringComparisonResult;
@@ -72,9 +73,14 @@ class MeasuringVisitor implements Visitor
     {
         $this->checkMatched($result);
         $key = $result->getKey();
-        $this->updateIndentWidth(strlen($key) + strlen(self::MAP_TO));
+        $this->updateIndentWidth(strlen($key) + strlen($result->mapString()));
         $inner = $result->getResult();
         $inner->accept($this);
+    }
+
+    public function visitPropertyValueComparisonResult(PropertyValueComparisonResult $result)
+    {
+        $this->visitKeyValueComparisonResult($result);
     }
 
     public function visitRightValueMissingResult(RightValueMissingResult $result)

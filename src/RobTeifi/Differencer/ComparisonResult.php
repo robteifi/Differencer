@@ -88,6 +88,7 @@ abstract class ComparisonResult
     public function accept(Visitor $visitor)
     {
         $elementClass = join('', array_slice(explode('\\', get_class($this)), -1));
+
         $visitMethods = get_class_methods($visitor);
 
         foreach ($visitMethods as $method) {

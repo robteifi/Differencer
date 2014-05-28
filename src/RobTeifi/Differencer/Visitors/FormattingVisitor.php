@@ -9,6 +9,8 @@ use RobTeifi\Differencer\KeyValueComparisonResult;
 use RobTeifi\Differencer\LeftValueMissingResult;
 use RobTeifi\Differencer\MismatchedTypesResult;
 use RobTeifi\Differencer\NullComparisonResult;
+use RobTeifi\Differencer\ObjectComparisonResult;
+use RobTeifi\Differencer\PropertyValueComparisonResult;
 use RobTeifi\Differencer\RightValueMissingResult;
 use RobTeifi\Differencer\ScalarComparisonResult;
 use RobTeifi\Differencer\StringComparisonResult;
@@ -159,22 +161,16 @@ class FormattingVisitor implements Visitor
             $result->getKey(),
             $this->indentFieldWidth - strlen(self::MAP_TO)
         )
-            . self::MAP_TO;
-        //        $otherPrefix = str_repeat(' ', strlen($firstPrefix));
+            . $result->mapString();
         $visitor = $this->innerVisit($result->getResult());
 
         $result->getResult()->accept($visitor);
         $this->buffer->addBuffer($visitor->buffer, strlen($firstPrefix), $firstPrefix);
-        //        $first = true;
-        //
-        //        foreach ($visitor->buffer->getLines() as $line) {
-        //            if ($first) {
-        //                $first = false;
-        //                $this->addLine($line->hasMatched(), $firstPrefix . $line->getText(), $line->getMarker());
-        //            } else {
-        //                $this->addLine($line->hasMatched(), $otherPrefix . $line->getText(), $line->getMarker());
-        //            }
-        //        }
+    }
+
+    public function visitPropertyValueComparisonResult(PropertyValueComparisonResult $result)
+    {
+        $this->visitKeyValueComparisonResult($result);
     }
 
     public function visitRightValueMissingResult(RightValueMissingResult $result)
@@ -207,6 +203,20 @@ class FormattingVisitor implements Visitor
         );
     }
 
+    public function visitObjectComparisonResult(ObjectComparisonResult $aResult)
+    {
+        $buffer = new LineBuffer();
+        $this->buffer->add(true, $aResult->getClassName() . ' {', '');
+        foreach ($aResult->getResults() as $result) {
+            $visitor = $this->innerVisit($result);
+            $result->accept($visitor);
+            $this->buffer->addBuffer($visitor->getBuffer(), 3);
+        }
+        $this->buffer->add(true, '}', '');
+
+        return (string)$buffer;
+    }
+    
     private function padToWidth($value, $width)
     {
         $outArray = $this->padToWidthArray($value, $width);
