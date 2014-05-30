@@ -7,6 +7,4 @@ use RobTeifi\Differencer\ComparisonResult;
 interface Visitor
 {
     public function defaultVisit(ComparisonResult $result);
-
-
 }

@@ -6,9 +6,14 @@ final class Line
 {
     /** @var  boolean */
     private $matched ;
+
     /** @var  string */
     private $text ;
+
+    /** @var int  */
     private $extraIndent;
+
+    /** @var string  */
     private $marker = '>>>';
 
     public function __construct($matched, $text, $marker)
@@ -31,6 +36,7 @@ final class Line
     {
         return $this->marker;
     }
+
     /**
      * @return boolean
      */

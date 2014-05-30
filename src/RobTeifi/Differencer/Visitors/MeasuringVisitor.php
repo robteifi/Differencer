@@ -8,17 +8,18 @@ use RobTeifi\Differencer\CompoundResult;
 use RobTeifi\Differencer\KeyValueComparisonResult;
 use RobTeifi\Differencer\LeftValueMissingResult;
 use RobTeifi\Differencer\MismatchedTypesResult;
-use RobTeifi\Differencer\PropertyValueComparisonResult;
+use RobTeifi\Differencer\NullComparisonResult;
 use RobTeifi\Differencer\RightValueMissingResult;
 use RobTeifi\Differencer\ScalarComparisonResult;
 use RobTeifi\Differencer\StringComparisonResult;
 
 class MeasuringVisitor implements Visitor
 {
-    const MAP_TO = " => ";
     const INDENT = 3;
+
     /** @var  int */
     private $leftWidth ;
+
     /** @var  int */
     private $rightWidth ;
 
@@ -43,7 +44,13 @@ class MeasuringVisitor implements Visitor
 
     public function defaultVisit(ComparisonResult $result)
     {
-        // TODO: Implement defaultVisit() method.
+        echo "No comparison result visitor defined for " . get_class($result)."\n";
+    }
+
+    public function visitNullComparisonResult(NullComparisonResult $result)
+    {
+        $this->updateLeftWidth(4);
+        $this->updateRightWidth(4);
     }
 
     public function visitStringComparisonResult(StringComparisonResult $result)
@@ -76,11 +83,6 @@ class MeasuringVisitor implements Visitor
         $this->updateIndentWidth(strlen($key) + strlen($result->mapString()));
         $inner = $result->getResult();
         $inner->accept($this);
-    }
-
-    public function visitPropertyValueComparisonResult(PropertyValueComparisonResult $result)
-    {
-        $this->visitKeyValueComparisonResult($result);
     }
 
     public function visitRightValueMissingResult(RightValueMissingResult $result)
@@ -198,9 +200,6 @@ class MeasuringVisitor implements Visitor
         $this->indentWidth = 0 ;
     }
 
-    /**
-     * @param \RobTeifi\Differencer\ComparisonResult $result
-     */
     public function checkMatched(ComparisonResult $result)
     {
         if (!$result->getMatched()) {

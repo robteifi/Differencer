@@ -25,3 +25,30 @@ new FormattingDifferencer(
     new PrivateClass('def'),
     false
 );
+
+new FormattingDifferencer(
+    "Class with embedded class identical values",
+    new PrivateClass(new PrivateClass('abc')),
+    new PrivateClass(new PrivateClass('abc')),
+    true
+);
+new FormattingDifferencer(
+    "Class with embedded class different values",
+    new PrivateClass(new PrivateClass('abc')),
+    new PrivateClass(new PrivateClass('def')),
+    false
+);
+
+new FormattingDifferencer(
+    "Array with embedded class identical values",
+    ['a' => new PrivateClass('abc')],
+    ['a' => new PrivateClass('abc')],
+    true
+);
+new FormattingDifferencer(
+    "Array with embedded class different values",
+    ['a' => new PrivateClass('abc')],
+    ['a' => new PrivateClass('def')],
+    false
+);
+

@@ -10,7 +10,6 @@ use RobTeifi\Differencer\LeftValueMissingResult;
 use RobTeifi\Differencer\MismatchedTypesResult;
 use RobTeifi\Differencer\NullComparisonResult;
 use RobTeifi\Differencer\ObjectComparisonResult;
-use RobTeifi\Differencer\PropertyValueComparisonResult;
 use RobTeifi\Differencer\RightValueMissingResult;
 use RobTeifi\Differencer\ScalarComparisonResult;
 use RobTeifi\Differencer\StringComparisonResult;
@@ -37,7 +36,6 @@ class FormattingVisitor implements Visitor
      */
     public function __construct(ComparisonResult $result, $leftName = null, $rightName = null)
     {
-
         $this->measureResult($result);
 
         $this->buffer = new LineBuffer();
@@ -168,11 +166,6 @@ class FormattingVisitor implements Visitor
         $this->buffer->addBuffer($visitor->buffer, strlen($firstPrefix), $firstPrefix);
     }
 
-    public function visitPropertyValueComparisonResult(PropertyValueComparisonResult $result)
-    {
-        $this->visitKeyValueComparisonResult($result);
-    }
-
     public function visitRightValueMissingResult(RightValueMissingResult $result)
     {
         $this->buffer->add(
@@ -216,7 +209,7 @@ class FormattingVisitor implements Visitor
 
         return (string)$buffer;
     }
-    
+
     private function padToWidth($value, $width)
     {
         $outArray = $this->padToWidthArray($value, $width);
@@ -231,7 +224,8 @@ class FormattingVisitor implements Visitor
     /**
      * @param $leftField
      * @param $rightField
-     * @internal param $prefix
+     * @param string $prefixFirst
+     * @param int $prefixWidth
      * @return string
      */
     public function formatAsRow($leftField, $rightField, $prefixFirst = '', $prefixWidth = 0)

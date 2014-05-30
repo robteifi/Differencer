@@ -87,26 +87,38 @@ abstract class ComparisonResult
 
     public function accept(Visitor $visitor)
     {
-        $elementClass = join('', array_slice(explode('\\', get_class($this)), -1));
-
-        $visitMethods = get_class_methods($visitor);
-
-        foreach ($visitMethods as $method) {
-
-            // we've found the visitation method for this class type
-            if ('visit' . $elementClass == $method) {
-
-                // visit the method and exit
-                return $visitor->{'visit' . $elementClass}($this);
-            }
-        }
-
-        // If no visitFoo, etc, call a default algorithm
-        return $visitor->defaultVisit($this);
+        return $visitor->{$this->getVisitMethodName($visitor, get_class($this))}($this);
     }
 
     public static function getMarker()
     {
         return '>>>';
+    }
+
+    /**
+     * @param $className
+     * @return string
+     */
+    private function makeVisitMethodName($className)
+    {
+        return 'visit' . join('', array_slice(explode('\\', $className), -1));
+    }
+
+    /**
+     * @param Visitor $visitor
+     * @param $className
+     * @return string
+     */
+    private function getVisitMethodName(Visitor $visitor, $className)
+    {
+        $visitMethods = get_class_methods($visitor);
+        while ($className) {
+            $methodName = $this->makeVisitMethodName($className);
+            if (in_array($methodName, $visitMethods)) {
+                return $methodName;
+            }
+            $className = get_parent_class($className);
+        }
+        return 'defaultVisit';
     }
 }
