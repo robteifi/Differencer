@@ -76,6 +76,8 @@ unset($arr2['address']['county']);
 new FormattingDifferencer('2D Arrays that match', $arr1, $arr1, true, 0.00000001);
 new FormattingDifferencer('2D Arrays that don\'t match (key mismatch)', $arr1, $arr2, false, 0.00000001);
 
+
+
 $arr3 = $arr1 ;
 unset($arr3['address']);
 new FormattingDifferencer('Arrays that don\'t match (missing array)', $arr1, $arr3, false, 0.00001);
@@ -85,3 +87,8 @@ new FormattingDifferencer('Arrays that should match with nulls', ['a' => null], 
 new FormattingDifferencer('Empty arrays that should match', [], [], true);
 
 include "./classComparisons.php";
+
+$result = FormattingDifferencer::tryCompare($arr1, $arr2, 0.00000001);
+if (!$result->getMatched()) {
+    FormattingDifferencer::explain($result);
+}
