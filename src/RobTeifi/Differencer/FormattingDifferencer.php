@@ -31,7 +31,7 @@ class FormattingDifferencer
         $result->accept($this->visitor);
         echo $this->visitor->getOutput();
         if (is_array($value2) && $this->isNonAssocArray($value2)) {
-            echo "\n";
+            echo "\nTo quick fix the test use this table in your feature\n";
             echo $this->formatArray($value2);
         }
         $this->expected = $expected;
