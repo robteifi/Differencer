@@ -30,6 +30,10 @@ class FormattingDifferencer
         $this->visitor = new FormattingVisitor($result, 'Original', 'Comparison');
         $result->accept($this->visitor);
         echo $this->visitor->getOutput();
+        if (is_array($value2) && $this->isNonAssocArray($value2)) {
+            echo "\n";
+            echo $this->formatArray($value2);
+        }
         $this->expected = $expected;
     }
 
@@ -66,5 +70,51 @@ class FormattingDifferencer
     public function matched()
     {
         return $this->result->getMatched();
+    }
+
+    private function formatArray(array $value)
+    {
+        $result = '';
+        if (count($value) > 0) {
+            if (is_array($value[0])) {
+                $result .= $this->formatRow(array_keys($value[0]));
+                foreach ($value as $row) {
+                    if (!is_array($row)) {
+                        return '';
+                    }
+                    $result .= $this->formatRow(array_values($row));
+                }
+            }
+        }
+        return $result;
+    }
+
+    private function formatRow($row)
+    {
+        if (!is_array($row)) {
+            return '';
+        }
+
+        $result = '| ';
+        foreach ($row as $value) {
+            $result .= $value . ' | ';
+        }
+        return $result . "\n";
+    }
+
+    private function isNonAssocArray(array $value)
+    {
+        $keys = array_keys($value) ;
+        $last = -1 ;
+        foreach ($keys as $key) {
+            if (!is_numeric($key)) {
+                return false ;
+            }
+            if ($key != $last + 1) {
+                return false ;
+            }
+            $last = $key ;
+        }
+        return true ;
     }
 }

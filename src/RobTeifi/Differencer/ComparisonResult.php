@@ -85,14 +85,14 @@ abstract class ComparisonResult
         return str_repeat(' ', $repetitions);
     }
 
-    public function accept(Visitor $visitor)
-    {
-        return $visitor->{$this->getVisitMethodName($visitor, get_class($this))}($this);
-    }
-
     public static function getMarker()
     {
         return '>>>';
+    }
+
+    public function accept(Visitor $visitor)
+    {
+        return $visitor->{$this->getVisitMethodName($visitor, get_class($this))}($this);
     }
 
     /**

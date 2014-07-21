@@ -3,6 +3,36 @@ require_once './vendor/autoload.php';
 
 use RobTeifi\Differencer\FormattingDifferencer;
 
+new FormattingDifferencer(
+    '1D Arrays that don\'t match',
+    [
+        ['name' => 'Rob', 'value' => '123'],
+        ['name' => 'Tom', 'value' => '321'],
+    ],
+    [
+        ['name' => 'Rob', 'value' => '123'],
+        ['name' => 'Tom', 'value' => '345'],
+
+    ],
+    false
+);
+
+
+
+new FormattingDifferencer('2D Arrays that don\'t match', [
+    'abc' =>
+        [
+            'def' => 'xyz',
+            'ghi' => 1354
+        ]
+], [
+    'abc' =>
+        [
+            'def' => 'jkl',
+            'ghi' => '1354'
+        ]
+], false);
+
 new FormattingDifferencer('Booleans that should match(false)', false, false, true);
 new FormattingDifferencer('Booleans that should match(true)', true, true, true);
 new FormattingDifferencer('Booleans that should not match(true,false)', true, false, false);
@@ -24,19 +54,6 @@ new FormattingDifferencer('Arrays that don\'t match', $a1, $a2, false);
 new FormattingDifferencer('Arrays that don\'t match key mismatch', ['abc' => 'def'], ['ghi' => 'jkl'], false);
 
 
-new FormattingDifferencer('2D Arrays that don\'t match', [
-    'abc' =>
-        [
-            'def' => 'xyz',
-            'ghi' => 1354
-        ]
-], [
-    'abc' =>
-        [
-            'def' => 'jkl',
-            'ghi' => '1354'
-        ]
-], false);
 
 new FormattingDifferencer('2D Arrays that don\'t match (key mismatch)', [
     'abc' =>
