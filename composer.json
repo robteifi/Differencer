@@ -1,10 +1,10 @@
 {
     "name": "robteifi/differencer",
-    "description": "Side-by-side comparison with highlighted differences",
+    "description": "Side-by-side comparison with highlighted differences for use with behat",
     "type": "library",
     "license": "MIT",
     "homepage": "https://github.com/robteifi/Differencer",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "authors": [
         {
             "name": "Rob Heyes",
