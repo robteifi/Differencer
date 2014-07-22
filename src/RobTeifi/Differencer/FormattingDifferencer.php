@@ -30,10 +30,7 @@ class FormattingDifferencer
         $this->visitor = new FormattingVisitor($result, 'Original', 'Comparison');
         $result->accept($this->visitor);
         echo $this->visitor->getOutput();
-        if (is_array($value2) && $this->isNonAssocArray($value2)) {
-            echo "\nTo quick fix the test use this table in your feature\n";
-            echo $this->formatArray($value2);
-        }
+        $this->showBehatTableQuickFix($value2);
         $this->expected = $expected;
     }
 
@@ -74,30 +71,50 @@ class FormattingDifferencer
 
     private function formatArray(array $value)
     {
-        $result = '';
-        if (count($value) > 0) {
-            if (is_array($value[0])) {
-                $result .= $this->formatRow(array_keys($value[0]));
-                foreach ($value as $row) {
-                    if (!is_array($row)) {
-                        return '';
-                    }
-                    $result .= $this->formatRow(array_values($row));
-                }
+        $widths = $this->measureArray($value);
+        $result = $this->formatRow(array_keys($value[0]), $widths);
+        foreach ($value as $row) {
+            if (!is_array($row)) {
+                return '';
             }
+            $result .= $this->formatRow(array_values($row), $widths);
         }
         return $result;
     }
 
-    private function formatRow($row)
+    private function measureArray(array $value)
+    {
+        $header = $this->measureRow(array_keys($value[0]));
+        $result = $header;
+        foreach ($value as $row) {
+            if (!is_array($row)) {
+                return '';
+            }
+            $result = $this->mergeMeasurements($this->measureRow(array_values($row)), $header);
+        }
+        return $result;
+    }
+
+    private function measureRow(array $row)
+    {
+        $result = [];
+        foreach ($row as $value) {
+            $result[] = strlen((string) $value);
+        }
+        return $result ;
+    }
+
+    private function formatRow($row, array $widths)
     {
         if (!is_array($row)) {
             return '';
         }
 
         $result = '| ';
+        $idx = 0 ;
         foreach ($row as $value) {
-            $result .= $value . ' | ';
+            $width = $widths[$idx++];
+            $result .= $value . str_repeat(' ', $width - strlen((string) $value)) . '| ';
         }
         return $result . "\n";
     }
@@ -116,5 +133,35 @@ class FormattingDifferencer
             $last = $key ;
         }
         return true ;
+    }
+
+    /**
+     * @param $value2
+     */
+    private function showBehatTableQuickFix($value2)
+    {
+        if (is_array($value2) && $this->isNonAssocArray($value2) && $this->isBehatFormat($value2)) {
+            echo "\nTo quick fix the test use this table in your feature\n";
+            echo $this->formatArray($value2);
+        }
+    }
+
+    /**
+     * @param array $value
+     * @return bool
+     */
+    private function isBehatFormat(array $value)
+    {
+        return count($value) > 0 && is_array($value[0]);
+    }
+
+
+    private function mergeMeasurements($row, $header)
+    {
+        $result = [];
+        foreach ($header as $key => $value) {
+            $result[] = max($row[$key], $value);
+        }
+        return $result;
     }
 }
