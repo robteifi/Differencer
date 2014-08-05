@@ -33,6 +33,17 @@ new FormattingDifferencer('2D Arrays that don\'t match', [
         ]
 ], false);
 
+new FormattingDifferencer('2D Array that doesn\'t match a null',
+    [
+    'abc' =>
+        [
+            'def' => 'xyz',
+            'ghi' => 1354
+        ]
+    ],
+    null,
+    false
+);
 new FormattingDifferencer('Booleans that should match(false)', false, false, true);
 new FormattingDifferencer('Booleans that should match(true)', true, true, true);
 new FormattingDifferencer('Booleans that should not match(true,false)', true, false, false);
