@@ -114,7 +114,7 @@ class FormattingDifferencer
         $idx = 0 ;
         foreach ($row as $value) {
             $width = $widths[$idx++];
-            $result .= $value . str_repeat(' ', $width - strlen((string) $value)) . '| ';
+            $result .= $value . str_repeat(' ', max(0, $width - strlen((string) $value))) . '| ';
         }
         return $result . "\n";
     }
