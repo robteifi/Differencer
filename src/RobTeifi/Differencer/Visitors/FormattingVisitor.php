@@ -351,7 +351,7 @@ class FormattingVisitor implements Visitor
      */
     private function padToWidthArray($value, $width)
     {
-        if (is_array($value)) {
+        if (is_array($value) || is_object($value)) {
             $asTextArray = explode("\n", print_r($value, true));
             $outArray = [];
             foreach ($asTextArray as $line) {
