@@ -31,6 +31,9 @@ abstract class ComparisonResult
      */
     public static function typeAndValue($value)
     {
+        if (is_array($value)) {
+            $value = print_r($value, true);
+        }
         return ((string) $value) . ':(' . gettype($value) . ')';
     }
 
