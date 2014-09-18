@@ -142,16 +142,21 @@ class MeasuringVisitor implements Visitor
      */
     public function computeWidth($value)
     {
-        if (is_object($value) && ($value instanceof ComparisonResult)) {
-            $visitor = new MeasuringVisitor();
-            $visitor->updateFrom($this);
-            $value->accept($visitor);
-            if (!$visitor->hasMatched()) {
-                $this->matched = false ;
-            }
-            $this->updateFrom($visitor);
+        if (is_object($value)) {
+            if ($value instanceof ComparisonResult) {
+                $visitor = new MeasuringVisitor();
+                $visitor->updateFrom($this);
+                $value->accept($visitor);
+                if (!$visitor->hasMatched()) {
+                    $this->matched = false ;
+                }
+                $this->updateFrom($visitor);
 
-            return $visitor->getLeftWidth() + self::INDENT;
+                return $visitor->getLeftWidth() + self::INDENT;
+            } else {
+                echo '!!Unexpected object type '. get_class($value) . "\n" . print_r($value);
+                return 100;
+            }
         } elseif (is_array($value)) {
             $asTextArray = explode("\n", print_r($value, true));
             $width = 0 ;
